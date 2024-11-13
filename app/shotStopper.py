@@ -214,11 +214,7 @@ async def main():
                 break  # Exit to retry connection
             
             await asyncio.sleep(0.1)  # Small delay
-
-        # If connected but disconnected later, reset and retry
-        if is_connected and client and not client.is_connected:
             is_connected = False
-            print("Disconnected from scale, retrying connection")
 
         await asyncio.sleep(0.1)  # Delay to reduce loop intensity
 
