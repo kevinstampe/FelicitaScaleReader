@@ -140,7 +140,7 @@ async def connect_to_scale(address):
 
 def print_scale_data():
     global last_printed_message
-    message = f"Weight: {current_weight}{current_scale_unit}, Battery Level: {current_battery_level:.2f}%, Shot Running: {is_shot_running}"
+    message = f"Weight: {current_weight}{current_scale_unit}, Battery Level: {current_battery_level:.2f}%, Shot Running: {is_shot_running}, is waiting for shotbutton off: {waiting_for_shot_button_off}"
     if message != last_printed_message:
         last_printed_message = message
         print(message)
