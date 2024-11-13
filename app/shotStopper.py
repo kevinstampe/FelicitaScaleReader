@@ -106,9 +106,9 @@ def simulateShotButton():
     global is_shot_running
     global waiting_for_shot_button_off
     state = GPIO.input(2)
-    is_shot_running = state == GPIO.HIGH
+    is_shot_running = state == GPIO.LOW
 
-    if waiting_for_shot_button_off and state == GPIO.LOW:
+    if waiting_for_shot_button_off and state == GPIO.HIGH:
         waiting_for_shot_button_off = False
 
 def simulateShotButtonOff():
@@ -160,7 +160,7 @@ async def monitor_scale(client):
 
 async def main():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(2, GPIO.IN)
+    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     with open("mac_addresses.txt", "r") as f:
         address = f.readline().strip()
