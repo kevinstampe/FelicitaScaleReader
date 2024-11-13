@@ -186,20 +186,30 @@ async def main():
     global is_connected
     while True:
         if not is_connected:
-            # Attempt to connect to the scale
-            client = await connect_to_scale(address)
-            if client:
-                is_connected = True
-                await monitor_scale(client)
-            else:
-                # Fail-safe: check button state if the scale is not connected
-                button_state = GPIO.input(2)
-                if button_state == GPIO.LOW:
-                    setRelay(True)  # Activate pins 3 and 4
-                else:
-                    setRelay(False)  # Deactivate pins 3 and 4
-        await asyncio.sleep(0.1)  # Small delay to prevent rapid cycling
-        
+            # Attempt to connect to the scale with a timeout period
+            try:
+                client = await asyncio.wait_for(connect_to_scale(address), timeout=5)  # Adjust timeout as needed
+                if client:
+                    is_connected = True
+                    await monitor_scale(client)
+            except asyncio.TimeoutError:
+                print("Connection attempt timed out; enabling relay control from button")
+                
+                # Wait for button press to activate relay
+                while not is_connected:
+                    button_state = GPIO.input(2)
+                    
+                    # Activate relay if button is pressed (LOW) and scale is not connected
+                    if button_state == GPIO.LOW:
+                        setRelay(True)
+                    else:
+                        # Instant turn-off if button is released
+                        setRelay(False)
+
+                    await asyncio.sleep(0.1)  # Small delay to prevent rapid cycling
+        else:
+            await asyncio.sleep(0.1)
+            
 # Run the main function
 asyncio.run(main())
 
