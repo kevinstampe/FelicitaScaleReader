@@ -106,16 +106,25 @@ def simulateShotButton():
     global is_shot_running
     global waiting_for_shot_button_off
     state = GPIO.input(2)
-    is_shot_running = state == GPIO.LOW
 
-    if waiting_for_shot_button_off and state == GPIO.HIGH:
-        waiting_for_shot_button_off = False
+    if waiting_for_shot_button_off:
+        # Wait for the button to be released (HIGH)
+        if state == GPIO.HIGH:
+            waiting_for_shot_button_off = False  # Reset flag when button is released
+    else:
+        # Set shot running if button is pressed (LOW) and no pending reset
+        if state == GPIO.LOW and not is_shot_running:
+            is_shot_running = True
+        elif state == GPIO.HIGH and is_shot_running:
+            # Mark waiting_for_shot_button_off when shot is stopped
+            waiting_for_shot_button_off = True
 
 def simulateShotButtonOff():
     global is_shot_running
     global waiting_for_shot_button_off
     is_shot_running = False
     waiting_for_shot_button_off = True
+
 
 
 def setRelay(input):
@@ -151,9 +160,9 @@ async def monitor_scale(client):
 
     while is_connected:
         simulateShotButton()
-
         print_scale_data()
 
+        # Start shot stopper if shot has just started
         if is_shot_running:
             await shotStopper(client)
         await asyncio.sleep(0.1)
