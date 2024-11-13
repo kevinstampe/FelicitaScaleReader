@@ -82,7 +82,7 @@ async def shotStopper(client):
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_TARE]))
         await asyncio.sleep(0.1)
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_START_TIMER]))
-        setRelay("True")
+        setRelay(True)
         print("Tare and start timer commands sent")
 
         # Loop to monitor weight and button state
@@ -95,14 +95,14 @@ async def shotStopper(client):
             if not is_shot_running:
                 print("Shot stopped due to button being turned off")
                 await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
-                setRelay("False")
+                setRelay(False)
                 return  # Exit the function
 
         # Stop shot when target weight is reached
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
         print("Stop timer command sent due to reaching target weight")
         simulateShotButtonOff()
-        setRelay("False")
+        setRelay(False)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -134,8 +134,8 @@ def simulateShotButtonOff():
 
 
 def setRelay(input):
-    with open("relay.txt", "w") as f:
-        f.write(input)
+    GPIO.output(3, input)
+    GPIO.output(4, input)
 
 async def connect_to_scale(address):
     client = BleakClient(address, disconnect_callback)
@@ -176,7 +176,9 @@ async def monitor_scale(client):
 
 async def main():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(2, GPIO.IN)
+    GPIO.setup(3, GPIO.OUT)
+    GPIO.setup(4, GPIO.OUT)
 
     with open("mac_addresses.txt", "r") as f:
         address = f.readline().strip()
