@@ -2,10 +2,11 @@ import asyncio
 from bleak import BleakClient
 from const import (
     DATA_CHARACTERISTIC_UUID, 
+    CMD_START_TIMER, 
     CMD_STOP_TIMER,
     CMD_RESET_TIMER,
     CMD_TARE,
-    CMD_START_TIMER, 
+    CMD_WEIGHT_AND_TIMER_MODE,
     MIN_BATTERY_LEVEL,
     MAX_BATTERY_LEVEL
 )
@@ -18,7 +19,7 @@ current_battery_level = 0
 weight_stop_offset = 1.2 # how many grammes to stop before the target weight
 expected_shot_weight = 40
 
-def disconnect_callback():
+def disconnect_callback(client):
     print("Disconnected from the scale")
 
 # runs every notification indefinitely
@@ -63,6 +64,8 @@ async def connect_to_scale(address):
     try:
         async with BleakClient(address, disconnect_callback) as client:
             # one-time commands here:
+            await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_WEIGHT_AND_TIMER_MODE]))
+            await asyncio.sleep(0.1)
             await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
             await asyncio.sleep(0.1)
             await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_RESET_TIMER]))
