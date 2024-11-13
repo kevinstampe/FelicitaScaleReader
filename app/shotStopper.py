@@ -70,6 +70,7 @@ async def notification_handler(sender, data):
     parse_status_update(bytearray(data))
 
 async def shotStopper(client):
+    global is_shot_running
     try:
         # one-time commands here:
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_WEIGHT_AND_TIMER_MODE]))
@@ -84,17 +85,13 @@ async def shotStopper(client):
         setRelay("True")
         print("Tare and start timer commands sent")
 
-        global expected_shot_weight
-
-        global is_shot_running
-        # Keep connection open
+        # Keep connection open and monitor weight
         while current_weight < (expected_shot_weight - weight_stop_offset) and is_shot_running:
             await asyncio.sleep(0.1)
-            simulateShotButton()
             print_scale_data()
 
+        # Stop shot if weight target is reached or shot button is toggled off
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
-
         print("Stop timer command sent")
         simulateShotButtonOff()
         setRelay("False")
@@ -111,6 +108,7 @@ def simulateShotButton():
         # Wait for the button to be released (HIGH)
         if state == GPIO.HIGH:
             waiting_for_shot_button_off = False  # Reset flag when button is released
+            is_shot_running = False  # Reset shot state after button is toggled off
     else:
         # Set shot running if button is pressed (LOW) and no pending reset
         if state == GPIO.LOW and not is_shot_running:
@@ -153,6 +151,7 @@ def print_scale_data():
     if message != last_printed_message:
         last_printed_message = message
         print(message)
+
 
 
 async def monitor_scale(client):
