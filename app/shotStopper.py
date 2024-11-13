@@ -173,7 +173,7 @@ async def monitor_scale(client):
         if is_shot_running:
             await shotStopper(client)
         await asyncio.sleep(0.1)
-        
+
 async def main():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(2, GPIO.IN)
@@ -186,31 +186,36 @@ async def main():
     global is_connected
     while True:
         if not is_connected:
-            # Attempt to connect to the scale with a timeout
+            # Attempt to connect to the scale
             try:
                 client = await asyncio.wait_for(connect_to_scale(address), timeout=5)  # Adjust timeout as needed
                 if client:
                     is_connected = True
-                    await monitor_scale(client)
+                    print("Connected to scale")
+                    await monitor_scale(client)  # Keep monitoring as long as connected
             except asyncio.TimeoutError:
                 print("Connection attempt timed out; enabling relay control from button")
 
-                # Monitor button state for relay control and reconnect attempts
-                while not is_connected:
-                    button_state = GPIO.input(2)
-                    
-                    # Turn on relay if button is pressed (LOW) and connection has not been established
-                    if button_state == GPIO.LOW:
-                        setRelay(True)
-                    else:
-                        # Turn off relay instantly if button is released
-                        setRelay(False)
-                        break  # Exit loop to start a new connection attempt
-                    
-                    await asyncio.sleep(0.1)  # Small delay
+            # If connection fails or disconnects, control relay with button state
+            while not is_connected:
+                button_state = GPIO.input(2)
+                
+                # Activate relay if button is pressed (LOW)
+                if button_state == GPIO.LOW:
+                    setRelay(True)
+                else:
+                    # Turn off relay instantly if button is released
+                    setRelay(False)
+                
+                # Retry connection if button is released
+                if button_state == GPIO.HIGH:
+                    print("Retrying connection to scale")
+                    break  # Exit to retry connection
+                
+                await asyncio.sleep(0.1)  # Small delay to avoid excessive loops
 
         else:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.1)  # Maintain connection if alive
 
 # Run the main function
 asyncio.run(main())
