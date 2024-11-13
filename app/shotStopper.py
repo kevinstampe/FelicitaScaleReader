@@ -144,8 +144,7 @@ async def connect_to_scale(address):
         await client.start_notify(DATA_CHARACTERISTIC_UUID, notification_handler)
         print("Notifications enabled")
         
-        # Small delay to ensure notifications start
-        await asyncio.sleep(1)  # Wait a second for initial data
+        await asyncio.sleep(0.1) 
         
         return client
     except Exception as e:
@@ -190,7 +189,7 @@ async def main():
         if not is_connected:
             # Attempt to connect to the scale
             try:
-                client = await asyncio.wait_for(connect_to_scale(address), timeout=5)  # Adjust timeout as needed
+                client = await connect_to_scale(address)
                 if client:
                     is_connected = True
                     print("Connected to scale")
