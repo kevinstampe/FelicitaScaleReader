@@ -1,7 +1,7 @@
 import asyncio
 from bleak import BleakScanner
-from typing import Final
-SCALE_START_NAMES: Final = ["FELICITA"]
+
+from const import SCALE_START_NAMES
 
 
 async def find_acaia_devices(timeout=10, scanner: BleakScanner | None = None) -> list:

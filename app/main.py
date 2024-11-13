@@ -1,20 +1,14 @@
 import asyncio
 from bleak import BleakClient
-
-# Felicita scale characteristics
-DEVICE_NAME = "FELICITA"
-DATA_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb"
-DATA_CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"
-
-# Felicita command codes
-CMD_RESET_TIMER = 0x43
-CMD_TOGGLE_PRECISION = 0x44
-CMD_START_TIMER = 0x52
-CMD_STOP_TIMER = 0x53
-CMD_TARE = 0x54
-CMD_TOGGLE_UNIT = 0x55
-MIN_BATTERY_LEVEL = 129
-MAX_BATTERY_LEVEL = 158
+from const import (
+    DATA_CHARACTERISTIC_UUID, 
+    CMD_STOP_TIMER,
+    CMD_RESET_TIMER,
+    CMD_TARE,
+    CMD_START_TIMER, 
+    MIN_BATTERY_LEVEL,
+    MAX_BATTERY_LEVEL
+)
 
 last_battery_level_raw = 0
 
@@ -24,7 +18,7 @@ current_battery_level = 0
 weight_stop_offset = 1.2 # how many grammes to stop before the target weight
 expected_shot_weight = 40
 
-def on_disconnected(client):
+def disconnect_callback():
     print("Disconnected from the scale")
 
 # runs every notification indefinitely
@@ -67,11 +61,7 @@ async def notification_handler(sender, data):
 
 async def connect_to_scale(address):
     try:
-        async with BleakClient(address) as client:
-            client.set_disconnected_callback(on_disconnected)
-            await client.start_notify(DATA_CHARACTERISTIC_UUID, notification_handler)
-            print("Notifications enabled")
-
+        async with BleakClient(address, disconnect_callback) as client:
             # one-time commands here:
             await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
             await asyncio.sleep(0.1)
@@ -81,6 +71,9 @@ async def connect_to_scale(address):
             await asyncio.sleep(0.1)
             await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_START_TIMER]))
             print("Tare and start timer commands sent")
+
+            await client.start_notify(DATA_CHARACTERISTIC_UUID, notification_handler)
+            print("Notifications enabled")
 
             global expected_shot_weight
 
@@ -97,7 +90,7 @@ async def connect_to_scale(address):
     
 # open mac_addresses.txt and read first line, then run connect_to_scale
 with open("mac_addresses.txt", "r") as f:
-    DEVICE_MAC_ADDRESS = f.readline().strip()
+    address = f.readline().strip()
 
 # Run the main connection loop
-asyncio.run(connect_to_scale(DEVICE_MAC_ADDRESS))
+asyncio.run(connect_to_scale(address))

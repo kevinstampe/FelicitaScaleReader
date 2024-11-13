@@ -1,0 +1,18 @@
+from typing import Final
+
+# Felicita scale characteristics
+DATA_SERVICE_UUID: Final = "0000ffe0-0000-1000-8000-00805f9b34fb"
+DATA_CHARACTERISTIC_UUID: Final = "0000ffe1-0000-1000-8000-00805f9b34fb"
+
+# Felicita command codes
+CMD_RESET_TIMER: Final = 0x43
+CMD_TOGGLE_PRECISION: Final = 0x44
+CMD_START_TIMER: Final = 0x52
+CMD_STOP_TIMER: Final = 0x53
+CMD_TARE: Final = 0x54
+CMD_TOGGLE_UNIT: Final = 0x55
+
+MIN_BATTERY_LEVEL: Final = 129
+MAX_BATTERY_LEVEL: Final = 161
+
+SCALE_START_NAMES: Final = ["FELICITA"]

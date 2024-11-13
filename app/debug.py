@@ -1,19 +1,9 @@
 import asyncio
 from bleak import BleakClient
 
-# Felicita scale characteristics
-DEVICE_NAME = "FELICITA"
-DATA_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb"
-DATA_CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"
+from const import (
+    DATA_CHARACTERISTIC_UUID)
 
-# Felicita command codes
-CMD_TARE = 0x54
-CMD_START_TIMER = 0x52
-CMD_STOP_TIMER = 0x53
-CMD_RESET_TIMER = 0x43
-CMD_TOGGLE_UNIT = 0x55
-MIN_BATTERY_LEVEL = 129
-MAX_BATTERY_LEVEL = 158
 
 # Function to parse notifications
 def parse_status_update(felicita_raw_status):
@@ -37,6 +27,12 @@ async def connect_to_scale(address):
         await asyncio.sleep(100)
         await client.stop_notify(DATA_CHARACTERISTIC_UUID)
 
-address = "0C8F16A2-0BBD-99EC-1A2D-799B626209CC"
+# Address of the scale
+
+    
+# open mac_addresses.txt and read first line, then run connect_to_scale
+with open("mac_addresses.txt", "r") as f:
+    address = f.readline().strip()
+
 asyncio.run(connect_to_scale(address))
 
