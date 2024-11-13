@@ -95,5 +95,6 @@ async def connect_to_scale(address):
 with open("mac_addresses.txt", "r") as f:
     address = f.readline().strip()
 
+
 # Run the main connection loop
 asyncio.run(connect_to_scale(address))
