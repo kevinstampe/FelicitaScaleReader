@@ -160,7 +160,7 @@ async def monitor_scale(client):
 
 async def main():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(2, GPIO.IN)
 
     with open("mac_addresses.txt", "r") as f:
         address = f.readline().strip()
