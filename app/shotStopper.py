@@ -138,7 +138,7 @@ def setRelay(input):
     GPIO.output(4, input)
 
 async def connect_to_scale(address):
-    client = BleakClient(address, disconnect_callback)
+    client = BleakClient(address, disconnect_callback, timeout=3.0)
     try:
         await client.connect()
         await client.start_notify(DATA_CHARACTERISTIC_UUID, notification_handler)
