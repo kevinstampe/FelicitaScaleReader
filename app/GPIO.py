@@ -15,6 +15,8 @@ if is_raspberry_pi():
         IN = real_GPIO.IN
         BCM = real_GPIO.BCM
         BOARD = real_GPIO.BOARD
+        LOW = real_GPIO.LOW
+        HIGH = real_GPIO.HIGH
 
     except ImportError:
         # Fallback to mock implementation if RPi.GPIO is not available
