@@ -9,6 +9,7 @@ class GPIO:
             setup = real_GPIO.setup
             output = real_GPIO.output
             input = real_GPIO.input
+            PWM = real_GPIO.PWM
 
             # Constants
             OUT = real_GPIO.OUT
@@ -59,3 +60,15 @@ class GPIO:
                 return GPIO.LOW
             else:
                 return GPIO.HIGH
+            
+        @staticmethod
+        def PWM(pin, frequency):
+            print(f"Mock PWM on pin {pin} with frequency {frequency}")
+            
+            @staticmethod
+            def start(duty_cycle):
+                print(f"Mock start with duty cycle {duty_cycle}")
+                
+            @staticmethod   
+            def stop():
+                print("Mock stop")

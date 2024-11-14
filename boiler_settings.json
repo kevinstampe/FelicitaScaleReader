@@ -1,0 +1,7 @@
+{
+    "setpoint": 123,
+    "Kp": 60,
+    "Ki": 0.5,
+    "Kd": 10,
+    "antiwindup": 2
+}
