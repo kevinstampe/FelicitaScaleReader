@@ -1,6 +1,6 @@
 import asyncio
 from bleak import BleakClient
-import GPIO
+from RpiGPIO import GPIO
 from const import (
     DATA_CHARACTERISTIC_UUID, 
     CMD_START_TIMER, 
