@@ -11,3 +11,5 @@ env.bak/
 venv.bak/
 
 mac_addresses.txt
+relay.txt
+shotbutton.txt
