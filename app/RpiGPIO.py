@@ -49,6 +49,9 @@ class GPIO:
 
         @staticmethod
         def input(pin):
+            with open("shotbutton.txt", "w") as f:
+                f.write("true")
+            
             with open("shotbutton.txt", "r") as f:
                 state = f.read().strip().lower() == 'true'
             
