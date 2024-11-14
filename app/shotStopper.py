@@ -88,7 +88,7 @@ async def shotStopper(client):
         # Loop to monitor weight and button state
         while current_weight < (expected_shot_weight - weight_stop_offset):
             await asyncio.sleep(0.1)
-            simulateShotButton()  # Check button state
+            readShotButton()  # Check button state
             print_scale_data()
 
             # Stop immediately if button is turned off
@@ -101,13 +101,13 @@ async def shotStopper(client):
         # Stop shot when target weight is reached
         await client.write_gatt_char(DATA_CHARACTERISTIC_UUID, bytearray([CMD_STOP_TIMER]))
         print("Stop timer command sent due to reaching target weight")
-        simulateShotButtonOff()
+        setShotButtonOff()
         setRelay(False)
 
     except Exception as e:
         print(f"Error: {e}")
 
-def simulateShotButton():
+def readShotButton():
     global is_shot_running
     global waiting_for_shot_button_off
     state = GPIO.input(2)
@@ -125,7 +125,7 @@ def simulateShotButton():
             # Mark waiting_for_shot_button_off when shot is stopped
             waiting_for_shot_button_off = True
 
-def simulateShotButtonOff():
+def setShotButtonOff():
     global is_shot_running
     global waiting_for_shot_button_off
     is_shot_running = False
@@ -163,7 +163,7 @@ async def monitor_scale(client):
     global is_shot_running, is_connected
 
     while is_connected:
-        simulateShotButton()
+        readShotButton()
         print_scale_data()
 
         # Start shot stopper if shot has just started

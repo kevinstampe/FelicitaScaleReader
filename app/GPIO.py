@@ -1,28 +1,6 @@
-import platform
+from platform_check import is_raspberry_pi
 
-def is_raspberry_pi():
-    try:
-        # Check /etc/os-release for "Raspberry Pi" mention
-        with open("/etc/os-release", "r") as f:
-            if "Raspbian" in f.read() or "Raspberry Pi" in f.read():
-                return True
-    except FileNotFoundError:
-        pass
-
-    try:
-        # Check if processor is BCM (common for Raspberry Pi models)
-        with open("/proc/cpuinfo", "r") as f:
-            for line in f:
-                if "BCM" in line:
-                    return True
-    except FileNotFoundError:
-        pass
-
-    return False
-
-
-# Check if running on Linux (for Raspberry Pi)
-if platform.system() == "Linux" and is_raspberry_pi():
+if is_raspberry_pi():
     try:
         from RPi import GPIO as real_GPIO
 
