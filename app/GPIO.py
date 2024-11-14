@@ -39,8 +39,14 @@ if real_GPIO is None:
         print(f"Mock setup on pin {pin} with mode {mode}")
 
     def output(pin, state):
-        print(f"Mock output to pin {pin} with state {state}")
+        with open("relay.txt", "w") as f:
+            f.write(str(state))
 
     def input(pin):
-        print(f"Mock input from pin {pin}")
-        return False
+        with open("shotbutton.txt", "r") as f:
+            state = f.read().strip().lower() == 'true'
+        
+        if state:
+            return LOW
+        else:
+            return HIGH
