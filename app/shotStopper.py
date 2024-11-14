@@ -1,6 +1,6 @@
 import asyncio
 from bleak import BleakClient
-from RPi import GPIO
+import GPIO
 from const import (
     DATA_CHARACTERISTIC_UUID, 
     CMD_START_TIMER, 
@@ -130,8 +130,6 @@ def simulateShotButtonOff():
     global waiting_for_shot_button_off
     is_shot_running = False
     waiting_for_shot_button_off = True
-
-
 
 def setRelay(input):
     GPIO.output(3, input)
